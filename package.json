@@ -1,0 +1,16 @@
+{
+  "name": "dundun-cover",
+  "version": "1.0.0",
+  "description": "炖炖封面 - 博客封面生成器",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["blog", "cover", "generator"],
+  "author": "人生大乱炖",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

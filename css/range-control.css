@@ -1,0 +1,91 @@
+
+
+.range-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.range-btn {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    padding: 0;
+    background: var(--bg-panel);
+    border: 1.5px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.range-btn:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.range-btn:active {
+    transform: scale(0.95);
+}
+
+.range-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.range-btn:disabled:hover {
+    background: var(--bg-panel);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.range-wrapper input[type="range"] {
+    flex: 1;
+    margin: 0;
+}
+
+
+body:not(.light-theme) .range-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+body:not(.light-theme) .range-btn:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+
+body.light-theme .range-btn {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
+body.light-theme .range-btn:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+
+.range-btn::before {
+    display: block;
+    line-height: 1;
+}
+
+.range-btn.minus::before {
+    content: '−';
+}
+
+.range-btn.plus::before {
+    content: '+';
+}

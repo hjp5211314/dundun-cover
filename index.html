@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f4f4f5" media="(prefers-color-scheme: light)">
+    <title>炖炖封面 - 免费在线博客封面生成器 | 慢慢炖，出好图</title>
+    <meta name="description" content="炖炖封面是人生大乱炖开发的免费在线博客封面生成工具。支持自定义尺寸、渐变背景、图标特效和文字样式，专为博客文章、公众号、视频封面设计。无需设计经验，3分钟快速制作精美封面图，支持PNG/JPG/WebP格式导出。">
+    <meta name="keywords" content="炖炖封面,博客封面生成器,人生大乱炖,文章封面制作,免费封面设计,在线封面工具,博客配图,封面模板,公众号封面,视频封面">
+    <meta name="author" content="人生大乱炖">
+    
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    
+    <link rel="dns-prefetch" href="//cn.vercount.one">
+    <link rel="dns-prefetch" href="//unpkg.com">
+    <link rel="dns-prefetch" href="//fontsapi.zeoseven.com">
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fontsapi.zeoseven.com" crossorigin>
+    
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;background:#050505;color:#fff;height:100vh;overflow:hidden}
+        html.light-theme body{background:#f4f4f5;color:#18181b}
+        .app-layout{width:100vw;height:100vh;display:flex;overflow:hidden}
+    </style>
+    
+    <link rel="preload" href="https://unpkg.com/lxgw-wenkai-screen-webfont@1.1.0/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://unpkg.com/lxgw-wenkai-screen-webfont@1.1.0/style.css" rel="stylesheet"></noscript>
+    
+    <link rel="preload" href="https://fontsapi.zeoseven.com/570/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fontsapi.zeoseven.com/851/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fontsapi.zeoseven.com/84/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fontsapi.zeoseven.com/383/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fontsapi.zeoseven.com/451/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fontsapi.zeoseven.com/137/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fontsapi.zeoseven.com/790/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fontsapi.zeoseven.com/256/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fontsapi.zeoseven.com/832/main/result.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <script>
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                if (savedTheme === 'light') {
+                    document.documentElement.classList.add('light-theme');
+                }
+            } catch (e) {
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/controls.css">
+    <link rel="stylesheet" href="css/preview.css">
+</head>
+<body>
+    <div class="app-layout">
+        <header class="app-header">
+            <h1 class="app-title">炖炖封面 <span class="subtitle">慢慢炖，出好图</span></h1>
+            <div class="toggle-button">
+                <div id="themeToggle" class="btn btn-rect">
+                    <input class="checkbox" type="checkbox" />
+                    <div class="knob"></div>
+                    <div class="btn-bg"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <main class="preview-area">
+                <div class="preview-container" id="previewContainer">
+                    <div class="canvas-wrapper" id="canvasWrapper">
+                        <div id="coverCanvas" class="cover-canvas">
+                            <canvas id="renderCanvas"></canvas>
+                            <div id="backgroundLayer" class="background-layer"></div>
+                            <div id="textLayer" class="text-layer">
+                                <div id="textCenterElement" class="text-center"></div>
+                            </div>
+                            <div id="iconLayer" class="icon-layer">
+                                <div id="iconContainer" class="icon-container">
+                                    <img id="iconImage" src="" alt="" style="display: none;">
+                                </div>
+                            </div>
+                            <img id="bgImage" src="" alt="" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="control-panel floating-panel">
+                <div class="panel-tabs">
+                    <button class="tab-btn active" data-target="tab-size">基础</button>
+                    <button class="tab-btn" data-target="tab-icon">图标</button>
+                    <button class="tab-btn" data-target="tab-bg">背景</button>
+                    <button class="tab-btn" data-target="tab-text">文字</button>
+                    <button class="tab-btn" data-target="tab-export">导出</button>
+                    <div class="nav-bubble"></div>
+                </div>
+
+                <div class="panel-content">
+                    <section id="tab-size" class="control-section active-section">
+                        <div class="section-header">
+                            <h2>基础设置</h2>
+                            <p class="section-desc">设置封面尺寸及配置管理</p>
+                        </div>
+
+                        <div class="section-divider-compact"></div>
+                        <h3 class="sub-title">封面尺寸</h3>
+                        
+                        <div class="control-group">
+                            <div class="control-item">
+                                <label>预设尺寸</label>
+                                <div class="select-wrapper">
+                                    <select id="exportSize">
+                                        <option value="1000x500" selected>1000×500 (标准)</option>
+                                        <option value="1200x600">1200×600 (大屏)</option>
+                                        <option value="1600x800">1600×800 (超清)</option>
+                                        <option value="custom">自定义尺寸</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-item" id="customSizeInputs" style="display: none;">
+                                <div class="control-row">
+                                    <div class="control-item flex-1">
+                                        <label class="label-row mb-xs"><span class="label-text">宽度 (px)</span></label>
+                                        <input type="number" id="customWidth" value="1000" min="400" max="3000">
+                                    </div>
+                                    <div class="control-item flex-1">
+                                        <label class="label-row mb-xs"><span class="label-text">高度 (px)</span></label>
+                                        <input type="number" id="customHeight" value="500" min="200" max="1500">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+                        
+                        <h3 class="sub-title">配置管理</h3>
+                        <p class="sub-desc">导出或导入当前设计参数</p>
+                        
+                        <div class="control-group">
+                            <div class="control-row">
+                                <button id="exportConfigBtn" class="btn-text-compact btn-soft flex-1">导出配置</button>
+                                <label class="btn-text-compact btn-soft flex-1" style="margin: 0; cursor: pointer;">
+                                    导入配置
+                                    <input type="file" id="importConfigInput" accept=".json" style="display: none;">
+                                </label>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="tab-icon" class="control-section">
+                        <div class="section-header">
+                            <h2>图标设置</h2>
+                            <p class="section-desc">设置或上传你的图标</p>
+                        </div>
+
+                        <div class="section-divider-compact"></div>
+                        
+                        <h3 class="sub-title">图标设定</h3>
+                        <p class="sub-desc">选择合适图标</p>
+
+                        <div class="control-group">
+                            <div class="control-item icon-search-box">
+                                <input type="text" id="iconCode" placeholder="图标名">
+                                <div class="icon-actions">
+                                    <button id="importSvgBtn" class="btn-text-compact btn-soft" title="导入 SVG 代码">导入SVG</button>
+                                    <button id="iconLibraryBtn" class="btn-text-compact btn-soft" title="浏览图标库">图标库</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item">
+                                <label class="btn-text-compact btn-soft full-width">
+                                    上传图标
+                                    <input type="file" id="iconUpload" accept="image/*" style="display: none;">
+                                </label>
+                            </div>
+                            
+                            <div class="control-item" style="margin-bottom: 8px;">
+                                <button id="clearIcon" class="btn-text-compact btn-soft full-width">清除图标</button>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+                        
+                        <h3 class="sub-title">图标样式</h3>
+
+                        <div class="control-group">
+                            <div class="control-row">
+                                <div class="control-item flex-1">
+                                    <label class="label-row mb-xs"><span class="label-text">显示模式</span></label>
+                                    <div class="select-wrapper">
+                                        <select id="showCard">
+                                            <option value="true" selected>显示卡片</option>
+                                            <option value="false">仅显示图标</option>
+                                            <option value="none">隐藏</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="control-item flex-1">
+                                    <label class="label-row mb-xs"><span class="label-text">形状</span></label>
+                                    <div class="select-wrapper">
+                                        <select id="cardShape">
+                                            <option value="rounded-square" selected>圆角方形</option>
+                                            <option value="circle">圆形</option>
+                                            <option value="square">直角方形</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="cardSizeControl">
+                                <label class="label-row"><span class="label-text">卡片尺寸</span><span class="label-value"><span id="iconSizeValue">200</span>px</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="iconSize" data-step="5">−</button>
+                                    <input type="range" id="iconSize" min="100" max="400" value="200">
+                                    <button class="slider-btn plus-btn" data-target="iconSize" data-step="5">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">图标缩放</span><span class="label-value"><span id="imageScaleValue">70</span>%</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="imageScale" data-step="1">−</button>
+                                    <input type="range" id="imageScale" min="0" max="100" value="70">
+                                    <button class="slider-btn plus-btn" data-target="imageScale" data-step="1">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="cardRadiusControl">
+                                <label class="label-row"><span class="label-text">圆角半径</span><span class="label-value"><span id="iconRadiusValue">30</span>px</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="iconRadius" data-step="1">−</button>
+                                    <input type="range" id="iconRadius" min="10" max="45" value="30">
+                                    <button class="slider-btn plus-btn" data-target="iconRadius" data-step="1">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="cardEffectsGroup">
+                            <div class="section-divider"></div>
+                            <h3 class="sub-title">卡片参数</h3>
+                            
+                            <div class="control-group">
+                                <div class="control-item slider-with-buttons">
+                                    <label class="label-row"><span class="label-text">玻璃透明度</span><span class="label-value"><span id="glassOpacityValue">20</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="glassOpacity" data-step="1">−</button>
+                                        <input type="range" id="glassOpacity" min="0" max="100" value="20">
+                                        <button class="slider-btn plus-btn" data-target="glassOpacity" data-step="1">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="control-item slider-with-buttons">
+                                    <label class="label-row"><span class="label-text">边框发光</span><span class="label-value"><span id="glowValue">0</span>px</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="glow" data-step="1">−</button>
+                                        <input type="range" id="glow" min="0" max="50" value="0">
+                                        <button class="slider-btn plus-btn" data-target="glow" data-step="1">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="control-item slider-with-buttons">
+                                    <label class="label-row"><span class="label-text">内部立体</span><span class="label-value"><span id="insetDepthValue">0</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="insetDepth" data-step="1">−</button>
+                                        <input type="range" id="insetDepth" min="-100" max="100" value="0">
+                                        <button class="slider-btn plus-btn" data-target="insetDepth" data-step="1">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="control-item">
+                                    <div class="rotation-header">
+                                        <label class="label-row"><span class="label-text">旋转角度</span><span class="label-value"><span id="cardRotationValue">0</span>°</span></label>
+                                        <div class="button-group-mini" id="rotationModeGroup">
+                                            <button id="rotateModeSync" class="btn-mini active" title="同步旋转">同步旋转</button>
+                                            <button id="rotateModeInd" class="btn-mini" title="独立旋转">独立旋转</button>
+                                        </div>
+                                    </div>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="cardRotation" data-step="5">−</button>
+                                        <input type="range" id="cardRotation" min="-180" max="180" value="0">
+                                        <button class="slider-btn plus-btn" data-target="cardRotation" data-step="5">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="control-item slider-with-buttons" id="iconRotationControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">图标独立旋转</span><span class="label-value"><span id="iconRotationValue">0</span>°</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="iconRotation" data-step="5">−</button>
+                                        <input type="range" id="iconRotation" min="-180" max="180" value="0">
+                                        <button class="slider-btn plus-btn" data-target="iconRotation" data-step="5">+</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-item" id="iconFollowControl" style="display: none;">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="iconFollowCard" checked>
+                                        <span>图标跟随卡片旋转</span>
+                                    </label>
+                                </div>
+
+                                <div class="control-item slider-with-buttons" id="iconPositionXControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">水平微调</span><span class="label-value"><span id="iconPositionXValue">50</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="iconPositionX" data-step="1">−</button>
+                                        <input type="range" id="iconPositionX" min="0" max="100" value="50">
+                                        <button class="slider-btn plus-btn" data-target="iconPositionX" data-step="1">+</button>
+                                    </div>
+                                </div>
+                
+                                <div class="control-item slider-with-buttons" id="iconPositionYControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">垂直微调</span><span class="label-value"><span id="iconPositionYValue">50</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="iconPositionY" data-step="1">−</button>
+                                        <input type="range" id="iconPositionY" min="0" max="100" value="50">
+                                        <button class="slider-btn plus-btn" data-target="iconPositionY" data-step="1">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="tab-bg" class="control-section">
+                        <div class="section-header">
+                            <h2>背景设置</h2>
+                            <p class="section-desc">设置封面背景颜色或图片</p>
+                        </div>
+
+                        <div class="section-divider-compact"></div>
+                        <h3 class="sub-title">背景设定</h3>
+                        <p class="sub-desc">设置相关背景</p>
+
+                        <div class="control-group">
+                            <div class="control-item">
+                                <button id="autoColor" class="btn-text-compact btn-soft full-width">智能取色</button>
+                            </div>
+
+                            <div class="control-item">
+                                <label class="label-row"><span class="label-text">背景类型</span></label>
+                                <div class="select-wrapper">
+                                    <select id="bgType">
+                                        <option value="solid" selected>纯色背景</option>
+                                        <option value="linear">四周环绕渐变</option>
+                                        <option value="radial">高光流体渐变</option>
+                                        <option value="mesh">弥散光感</option>
+                                        <option value="dots">点阵网格</option>
+                                        <option value="waves">抽象波浪</option>
+                                        <option value="grain">噪点质感</option>
+                                        <option value="pop">几何拼贴</option>
+                                        <option value="hex">蜂巢晶格</option>
+                                        <option value="peaks">层叠山峰</option>
+                                        <option value="topo">等高线</option>
+                                        <option value="paper">纸艺层叠</option>
+                                        <option value="aurora">极光流幕</option>
+                                        <option value="image">图片背景</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="bgImageUploadControl" class="control-group" style="display: none;">
+                                <div class="control-item">
+                                    <label class="btn-text-compact btn-soft full-width">
+                                        上传背景图片
+                                        <input type="file" id="bgImageUpload" accept="image/*" style="display: none;">
+                                    </label>
+                                </div>
+                                <div class="control-item">
+                                    <button id="clearBgImage" class="btn-text-compact full-width">移除图片</button>
+                                </div>
+                            </div>
+
+                            <div class="control-row" style="margin-bottom: 16px;">
+                                <div class="control-item flex-1">
+                                    <label class="label-row mb-xs"><span class="label-text">主色</span></label>
+                                    <div class="color-picker-group">
+                                        <input type="color" id="bgColor1" value="#ff6b6b">
+                                        <input type="text" id="bgColor1Hex" class="hex-input" value="#FF6B6B" maxlength="7" placeholder="#FFFFFF">
+                                    </div>
+                                </div>
+                                <div class="control-item flex-1">
+                                    <label class="label-row mb-xs"><span class="label-text">辅色</span></label>
+                                    <div class="color-picker-group">
+                                        <input type="color" id="bgColor2" value="#ee5a6f">
+                                        <input type="text" id="bgColor2Hex" class="hex-input" value="#EE5A6F" maxlength="7" placeholder="#FFFFFF">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="gradientAngleControl">
+                                <label class="label-row"><span class="label-text">渐变角度</span><span class="label-value"><span id="gradientAngleValue">135</span>°</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="gradientAngle" data-step="15">−</button>
+                                    <input type="range" id="gradientAngle" min="0" max="360" value="135">
+                                    <button class="slider-btn plus-btn" data-target="gradientAngle" data-step="15">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="meshScaleControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">光斑大小</span><span class="label-value"><span id="meshScaleValue">50</span>%</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="meshScale" data-step="5">−</button>
+                                    <input type="range" id="meshScale" min="10" max="100" value="50">
+                                    <button class="slider-btn plus-btn" data-target="meshScale" data-step="5">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="dotScaleControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">网格密度</span><span class="label-value"><span id="dotScaleValue">30</span></span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="dotScale" data-step="2">−</button>
+                                    <input type="range" id="dotScale" min="10" max="100" value="30">
+                                    <button class="slider-btn plus-btn" data-target="dotScale" data-step="2">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="waveCountControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">波浪层数</span><span class="label-value"><span id="waveCountValue">5</span></span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="waveCount" data-step="1">−</button>
+                                    <input type="range" id="waveCount" min="3" max="10" value="5">
+                                    <button class="slider-btn plus-btn" data-target="waveCount" data-step="1">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="grainAmountControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">噪点强度</span><span class="label-value"><span id="grainAmountValue">20</span>%</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="grainAmount" data-step="5">−</button>
+                                    <input type="range" id="grainAmount" min="0" max="100" value="20">
+                                    <button class="slider-btn plus-btn" data-target="grainAmount" data-step="5">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="popCountControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">形状数量</span><span class="label-value"><span id="popCountValue">15</span></span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="popCount" data-step="1">−</button>
+                                    <input type="range" id="popCount" min="5" max="50" value="15">
+                                    <button class="slider-btn plus-btn" data-target="popCount" data-step="1">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="hexScaleControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">晶格大小</span><span class="label-value"><span id="hexScaleValue">40</span></span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="hexScale" data-step="5">−</button>
+                                    <input type="range" id="hexScale" min="20" max="100" value="40">
+                                    <button class="slider-btn plus-btn" data-target="hexScale" data-step="5">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="peaksCountControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">山峰层数</span><span class="label-value"><span id="peaksCountValue">5</span></span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="peaksCount" data-step="1">−</button>
+                                    <input type="range" id="peaksCount" min="3" max="10" value="5">
+                                    <button class="slider-btn plus-btn" data-target="peaksCount" data-step="1">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="topoScaleControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">线条密度</span><span class="label-value"><span id="topoScaleValue">30</span></span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="topoScale" data-step="5">−</button>
+                                    <input type="range" id="topoScale" min="10" max="100" value="30">
+                                    <button class="slider-btn plus-btn" data-target="topoScale" data-step="5">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="paperCountControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">层叠数量</span><span class="label-value"><span id="paperCountValue">5</span></span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="paperCount" data-step="1">−</button>
+                                    <input type="range" id="paperCount" min="3" max="8" value="5">
+                                    <button class="slider-btn plus-btn" data-target="paperCount" data-step="1">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons" id="auroraScaleControl" style="display: none;">
+                                <label class="label-row"><span class="label-text">光带范围</span><span class="label-value"><span id="auroraScaleValue">50</span>%</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="auroraScale" data-step="5">−</button>
+                                    <input type="range" id="auroraScale" min="20" max="100" value="50">
+                                    <button class="slider-btn plus-btn" data-target="auroraScale" data-step="5">+</button>
+                                </div>
+                            </div>
+
+                            <div id="bgImageControls" class="dynamic-controls">
+                                <div class="control-item slider-with-buttons" id="bgImageScaleControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">背景缩放</span><span class="label-value"><span id="bgImageScaleValue">100</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="bgImageScale" data-step="5">−</button>
+                                        <input type="range" id="bgImageScale" min="50" max="200" value="100">
+                                        <button class="slider-btn plus-btn" data-target="bgImageScale" data-step="5">+</button>
+                                    </div>
+                                </div>
+                                <div class="control-item slider-with-buttons" id="bgImageXControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">水平位置</span><span class="label-value"><span id="bgImageXValue">50</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="bgImageX" data-step="1">−</button>
+                                        <input type="range" id="bgImageX" min="0" max="100" value="50">
+                                        <button class="slider-btn plus-btn" data-target="bgImageX" data-step="1">+</button>
+                                    </div>
+                                </div>
+                                <div class="control-item slider-with-buttons" id="bgImageYControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">垂直位置</span><span class="label-value"><span id="bgImageYValue">50</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="bgImageY" data-step="1">−</button>
+                                        <input type="range" id="bgImageY" min="0" max="100" value="50">
+                                        <button class="slider-btn plus-btn" data-target="bgImageY" data-step="1">+</button>
+                                    </div>
+                                </div>
+                                <div class="control-item slider-with-buttons" id="bgImageBlurControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">背景模糊</span><span class="label-value"><span id="bgImageBlurValue">0</span>px</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="bgImageBlur" data-step="1">−</button>
+                                        <input type="range" id="bgImageBlur" min="0" max="50" value="0">
+                                        <button class="slider-btn plus-btn" data-target="bgImageBlur" data-step="1">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="highlightControls" class="dynamic-controls">
+                                <div class="control-item slider-with-buttons" id="highlightPositionControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">高光位置</span><span class="label-value"><span id="highlightPositionValue">50</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="highlightPosition" data-step="1">−</button>
+                                        <input type="range" id="highlightPosition" min="0" max="100" value="50">
+                                        <button class="slider-btn plus-btn" data-target="highlightPosition" data-step="1">+</button>
+                                    </div>
+                                </div>
+                                <div class="control-item slider-with-buttons" id="highlightWidthControl" style="display: none;">
+                                    <label class="label-row"><span class="label-text">高光宽度</span><span class="label-value"><span id="highlightWidthValue">30</span>%</span></label>
+                                    <div class="slider-container">
+                                        <button class="slider-btn minus-btn" data-target="highlightWidth" data-step="1">−</button>
+                                        <input type="range" id="highlightWidth" min="10" max="80" value="30">
+                                        <button class="slider-btn plus-btn" data-target="highlightWidth" data-step="1">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-item" id="randomGradientControl" style="margin-bottom: 12px;">
+                                <button id="randomGradient" class="btn-text-compact btn-soft full-width">随机参数</button>
+                            </div>
+
+                        </div>
+
+                        <div class="section-divider"></div>
+                        <h3 class="sub-title">边缘光晕</h3>
+                        
+                        <div class="control-group">
+                            <div class="control-item">
+                                <label class="label-row mb-xs"><span class="label-text">边缘光色</span></label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="edgeGlowColor" value="#ffffff">
+                                    <input type="text" id="edgeGlowColorHex" class="hex-input" value="#FFFFFF" maxlength="7" placeholder="#FFFFFF">
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">光晕强度</span><span class="label-value"><span id="edgeGlowValue">0</span>%</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="edgeGlow" data-step="5">−</button>
+                                    <input type="range" id="edgeGlow" min="0" max="100" value="0">
+                                    <button class="slider-btn plus-btn" data-target="edgeGlow" data-step="5">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">光晕范围</span><span class="label-value"><span id="edgeGlowSizeValue">20</span>px</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="edgeGlowSize" data-step="5">−</button>
+                                    <input type="range" id="edgeGlowSize" min="10" max="100" value="20">
+                                    <button class="slider-btn plus-btn" data-target="edgeGlowSize" data-step="5">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="tab-text" class="control-section">
+                        <div class="section-header">
+                            <h2>文字设置</h2>
+                            <p class="section-desc">添加标题并调整排版</p>
+                        </div>
+
+                        <div class="section-divider-compact"></div>
+                        <h3 class="sub-title">文本设定</h3>
+                        <p class="sub-desc">填写封面标题</p>
+
+                        <div class="control-group">
+                            <div class="control-item">
+                                <input type="text" id="textCenter" class="text-input-large" placeholder="在此输入封面标题">
+                            </div>
+
+                            <div class="control-item">
+                                <label>字体选择</label>
+                                <div class="select-wrapper">
+                                    <select id="fontFamily">
+                                        <option value="sans-serif" selected>系统默认</option>
+                                        <option value="'LXGW WenKai Screen', 'SimHei', sans-serif">霞鹜文楷</option>
+                                        <option value="'DouyinSans', sans-serif">抖音美好体</option>
+                                        <option value="'MaoKenTangYuan (beta)', sans-serif">猫啃网糖圆体</option>
+                                        <option value="'Mengshen-Handwritten', cursive">萌神手写体</option>
+                                        <option value="'NanoKongHinhHei', sans-serif">纳米空型黑</option>
+                                        <option value="'Maoken Glitch Sans', sans-serif">猫啃网故障黑</option>
+                                        <option value="'KURIYAMAKOUCHIFONT_N', sans-serif">栗山巧緻</option>
+                                        <option value="'Huiwen-mincho', serif">汇文明朝体</option>
+                                        <option value="'BoutiqueBitmap9x9 3D', monospace">精品点阵体9x9 3D</option>
+                                        <option value="'Fusion Pixel 12px M latin', monospace">缝合像素字体</option>
+                                        <option value="'SimHei', sans-serif">黑体</option>
+                                        <option value="'SimSun', serif">宋体</option>
+                                        <option value="'KaiTi', serif">楷体</option>
+                                        <option value="'FangSong', serif">仿宋</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-row">
+                                <div class="control-item flex-1">
+                                    <label class="label-row mb-xs"><span class="label-text">文字颜色</span></label>
+                                    <div class="color-picker-group">
+                                        <input type="color" id="textColor" value="#ffffff">
+                                        <input type="text" id="textColorHex" class="hex-input" value="#FFFFFF" maxlength="7" placeholder="#FFFFFF">
+                                    </div>
+                                </div>
+                                <div class="control-item flex-1">
+                                    <label class="label-row mb-xs"><span class="label-text">文字加粗</span></label>
+                                    <button id="fontWeightToggle" class="btn-text-compact full-width" data-weight="400">加粗</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">字号</span><span class="label-value"><span id="fontSizeValue">160</span>px</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="fontSize" data-step="10">−</button>
+                                    <input type="range" id="fontSize" min="60" max="300" value="160">
+                                    <button class="slider-btn plus-btn" data-target="fontSize" data-step="10">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">字间距</span><span class="label-value"><span id="letterSpacingValue">0</span>px</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="letterSpacing" data-step="1">−</button>
+                                    <input type="range" id="letterSpacing" min="-10" max="30" value="0">
+                                    <button class="slider-btn plus-btn" data-target="letterSpacing" data-step="1">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">垂直位置</span><span class="label-value"><span id="textPositionValue">50</span>%</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="textPosition" data-step="1">−</button>
+                                    <input type="range" id="textPosition" min="0" max="100" value="50">
+                                    <button class="slider-btn plus-btn" data-target="textPosition" data-step="1">+</button>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        <h3 class="sub-title">装饰效果</h3>
+                        
+                        <div class="control-group">
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">描边粗细</span><span class="label-value"><span id="textStrokeValue">0</span>px</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="textStroke" data-step="1">−</button>
+                                    <input type="range" id="textStroke" min="0" max="10" value="0">
+                                    <button class="slider-btn plus-btn" data-target="textStroke" data-step="1">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item">
+                                <label class="label-row mb-xs"><span class="label-text">描边颜色</span></label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="strokeColor" value="#ffffff">
+                                    <input type="text" id="strokeColorHex" class="hex-input" value="#FFFFFF" maxlength="7" placeholder="#FFFFFF">
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">描边透明度</span><span class="label-value"><span id="strokeOpacityValue">0</span>%</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="strokeOpacity" data-step="10">−</button>
+                                    <input type="range" id="strokeOpacity" min="0" max="100" value="0">
+                                    <button class="slider-btn plus-btn" data-target="strokeOpacity" data-step="10">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">阴影距离</span><span class="label-value"><span id="textShadowValue">10</span>px</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="textShadow" data-step="1">−</button>
+                                    <input type="range" id="textShadow" min="0" max="50" value="10">
+                                    <button class="slider-btn plus-btn" data-target="textShadow" data-step="1">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-item">
+                                <label class="label-row mb-xs"><span class="label-text">阴影颜色</span></label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="shadowColor" value="#000000">
+                                    <input type="text" id="shadowColorHex" class="hex-input" value="#000000" maxlength="7" placeholder="#FFFFFF">
+                                </div>
+                            </div>
+
+                            <div class="control-item slider-with-buttons">
+                                <label class="label-row"><span class="label-text">阴影透明度</span><span class="label-value"><span id="shadowOpacityValue">50</span>%</span></label>
+                                <div class="slider-container">
+                                    <button class="slider-btn minus-btn" data-target="shadowOpacity" data-step="10">−</button>
+                                    <input type="range" id="shadowOpacity" min="0" max="100" value="50">
+                                    <button class="slider-btn plus-btn" data-target="shadowOpacity" data-step="10">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="tab-export" class="control-section">
+                        <div class="section-header">
+                            <h2>导出设置</h2>
+                            <p class="section-desc">保存你的设计</p>
+                        </div>
+
+                        <div class="section-divider-compact"></div>
+                        <h3 class="sub-title">导出封面</h3>
+
+                        <div class="control-group">
+                            <div class="control-item">
+                                <label>文件格式</label>
+                                <div class="select-wrapper">
+                                    <select id="exportFormat">
+                                        <option value="webp" selected>WebP (推荐)</option>
+                                        <option value="png">PNG (无损)</option>
+                                        <option value="jpg">JPG (通用)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="download-group">
+                                <button id="exportBtn" class="dl-btn dl-btn-top">下载封面</button>
+                                <button id="getImageLink" class="dl-btn dl-btn-bottom">获取外链</button>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                </div>
+                                <div class="info-content">
+                                    <p><strong>温馨提示：</strong>由于使用 Cloudflare R2 存储，部分地区可能存在访问速度较慢或不稳定的情况，建议同时下载保存原图，以备不时之需。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </aside>
+        </div>
+
+        <footer class="app-footer">
+            <div class="footer-top">
+                <div class="copyright-wrapper">
+                    <span>© 2025</span>
+                    <a class="copyright-link" href="https://wzjk.de5.net" target="_blank" rel="noopener noreferrer">
+                        <span class="brand-gradient">人生大乱炖</span>
+                    </a>
+                </div>
+                <div class="stats-text">
+                    <span><span class="stat-label">总访客: </span><span id="busuanzi_value_site_uv">...</span></span>
+                    <span class="divider">/</span>
+                    <span><span class="stat-label">总访问: </span><span id="busuanzi_value_site_pv">...</span></span>
+                </div>
+            </div>
+            <a class="opensource-link" href="https://github.com/hjp5211314/dundun-cover" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                <span>dundun-cover · 项目开源</span>
+            </a>
+        </footer>
+    </div>
+    
+    <script async src="https://cn.vercount.one/js"></script>
+
+    <div id="svgImportModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>导入SVG代码</h3>
+            <textarea id="svgCodeInput" placeholder="在此粘贴SVG代码"></textarea>
+            <div class="modal-actions">
+                <button id="cancelSvgImport" class="btn-secondary">取消</button>
+                <button id="confirmSvgImport" class="btn-primary">导入</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageLinkModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>图片外链</h3>
+            <div class="link-box">
+                <input type="text" id="imageLinkInput" readonly>
+                <div id="uploadStatus"></div>
+            </div>
+            <div class="modal-actions">
+                <button id="closeImageLink" class="btn-secondary">关闭</button>
+                <button id="copyImageLink" class="btn-primary">复制链接</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/copyright.js"></script>
+    <script src="https://unpkg.com/colorthief@2.4.0/dist/color-thief.umd.js"></script>
+    <script type="module" src="js/color-extractor.js"></script>
+    <script type="module" src="js/image-handler.js"></script>
+    <script type="module" src="js/bg-image-handler.js"></script>
+    <script type="module" src="js/background.js"></script>
+    <script type="module" src="js/icon-effects.js"></script>
+    <script type="module" src="js/text-editor.js"></script>
+    <script type="module" src="js/renderer.js"></script>
+    <script type="module" src="js/export.js"></script>
+    <script type="module" src="js/image-uploader.js"></script>
+    <script type="module" src="js/config-manager.js"></script>
+    <script type="module" src="js/color-sync.js"></script>
+    <script type="module" src="js/app.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const sections = document.querySelectorAll('.control-section');
+            const panelContent = document.querySelector('.panel-content');
+            const scrollMap = new Map();
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const currentActive = document.querySelector('.tab-btn.active');
+                    if (currentActive && panelContent) {
+                        scrollMap.set(currentActive.dataset.target, panelContent.scrollTop);
+                    }
+
+                    tabs.forEach(t => t.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active-section'));
+                    
+                    tab.classList.add('active');
+                    const targetId = tab.dataset.target;
+                    document.getElementById(targetId).classList.add('active-section');
+
+                    if (panelContent) {
+                        const savedScroll = scrollMap.get(targetId);
+                        if (savedScroll !== undefined) {
+                            panelContent.scrollTop = savedScroll;
+                        } else {
+                            panelContent.scrollTop = 0;
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
