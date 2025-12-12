@@ -11,7 +11,7 @@
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
 [![Stars](https://img.shields.io/github/stars/hjp5211314/dundun-cover?style=flat&logo=github)](https://github.com/hjp5211314/dundun-cover)
 
-[演示站点](https://cover.rsdld.com) · [快速部署](#快速开始) · [功能介绍](#功能特性) · [常见问题](#常见问题)
+[演示站点](https://ddfm.de5.net/) · [快速部署](#快速开始) · [功能介绍](#功能特性) · [常见问题](#常见问题)
 
 </div>
 
